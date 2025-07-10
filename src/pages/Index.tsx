@@ -1,12 +1,12 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Heart, Brain, Languages, QrCode, Stethoscope, Shield, Phone } from "lucide-react";
+import { AlertTriangle, Heart, Brain, Languages, QrCode, Stethoscope, Shield, Phone, Apple } from "lucide-react";
 import SymptomChecker from "@/components/SymptomChecker";
 import EmergencyProfile from "@/components/EmergencyProfile";
 import MentalHealthSupport from "@/components/MentalHealthSupport";
+import DietTracker from "@/components/DietTracker";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -41,6 +41,8 @@ const Index = () => {
         return <EmergencyProfile />;
       case "mental-health":
         return <MentalHealthSupport />;
+      case "diet":
+        return <DietTracker />;
       default:
         return (
           <div className="space-y-6">
@@ -73,7 +75,7 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Button 
                     variant="outline" 
                     className="h-20 flex-col gap-2"
@@ -97,6 +99,14 @@ const Index = () => {
                   >
                     <Heart className="h-6 w-6" />
                     Mental Health
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex-col gap-2"
+                    onClick={() => setActiveTab("diet")}
+                  >
+                    <Apple className="h-6 w-6" />
+                    Diet Tracker
                   </Button>
                 </div>
               </CardContent>
@@ -122,6 +132,13 @@ const Index = () => {
                       <p className="text-sm text-muted-foreground">Weekly summary available</p>
                     </div>
                     <Badge variant="secondary">1 day ago</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">Diet Goal Achieved</p>
+                      <p className="text-sm text-muted-foreground">Daily calorie target met</p>
+                    </div>
+                    <Badge variant="secondary">Yesterday</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -181,6 +198,7 @@ const Index = () => {
               { id: "symptoms", label: "Symptom Checker", icon: Brain },
               { id: "emergency", label: "Emergency", icon: AlertTriangle },
               { id: "mental-health", label: "Mental Health", icon: Shield },
+              { id: "diet", label: "Diet Tracker", icon: Apple },
             ].map((tab) => {
               const IconComponent = tab.icon;
               return (
