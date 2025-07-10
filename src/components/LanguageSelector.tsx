@@ -44,8 +44,6 @@ interface LanguageSelectorProps {
 }
 
 const LanguageSelector = ({ currentLanguage, onLanguageChange }: LanguageSelectorProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   const handleLanguageChange = (languageCode: string) => {
     const selectedLanguage = INDIAN_LANGUAGES.find(lang => lang.code === languageCode);
     if (selectedLanguage) {
@@ -54,23 +52,18 @@ const LanguageSelector = ({ currentLanguage, onLanguageChange }: LanguageSelecto
         description: `Interface language updated to ${selectedLanguage.native}`,
       });
     }
-    setIsOpen(false);
   };
 
   const currentLang = INDIAN_LANGUAGES.find(lang => lang.code === currentLanguage) || INDIAN_LANGUAGES[0];
 
   return (
     <Select value={currentLanguage} onValueChange={handleLanguageChange}>
-      <SelectTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2 min-w-[120px]"
-        >
+      <SelectTrigger className="w-[140px]">
+        <div className="flex items-center gap-2">
           <Languages className="h-4 w-4" />
           <span className="hidden sm:inline">{currentLang.name}</span>
           <span className="sm:hidden">{currentLang.code.toUpperCase()}</span>
-        </Button>
+        </div>
       </SelectTrigger>
       <SelectContent className="max-h-64 overflow-y-auto">
         {INDIAN_LANGUAGES.map((language) => (
