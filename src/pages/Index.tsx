@@ -2,16 +2,18 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Heart, Brain, Languages, QrCode, Stethoscope, Shield, Phone, Apple } from "lucide-react";
+import { AlertTriangle, Heart, Brain, QrCode, Stethoscope, Shield, Phone, Apple } from "lucide-react";
 import SymptomChecker from "@/components/SymptomChecker";
 import EmergencyProfile from "@/components/EmergencyProfile";
 import MentalHealthSupport from "@/components/MentalHealthSupport";
 import DietTracker from "@/components/DietTracker";
+import LanguageSelector from "@/components/LanguageSelector";
 import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [emergencyMode, setEmergencyMode] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
 
   const handleEmergencyAlert = () => {
     setEmergencyMode(true);
@@ -24,6 +26,11 @@ const Index = () => {
       toast.success("Emergency contacts notified. Help is on the way!");
       setEmergencyMode(false);
     }, 3000);
+  };
+
+  const handleLanguageChange = (language: string) => {
+    setSelectedLanguage(language);
+    console.log(`Language changed to: ${language}`);
   };
 
   const healthStats = [
@@ -165,14 +172,10 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Languages className="h-4 w-4" />
-                English
-              </Button>
+              <LanguageSelector 
+                currentLanguage={selectedLanguage}
+                onLanguageChange={handleLanguageChange}
+              />
               
               <Button
                 variant="destructive"
