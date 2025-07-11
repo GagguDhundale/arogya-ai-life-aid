@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { 
   Apple, 
   Plus, 
@@ -14,8 +13,11 @@ import {
   TrendingUp,
   Clock,
   Trash2,
-  BookOpen
+  BookOpen,
+  Droplets,
+  Minus
 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 
 interface FoodEntry {
@@ -38,10 +40,17 @@ interface DietRecommendation {
   tips: string[];
 }
 
-const DietTracker = () => {
-  const [activeTab, setActiveTab] = useState<"recommendations" | "tracker">("recommendations");
+interface DietTrackerProps {
+  selectedLanguage: string;
+}
+
+const DietTracker = ({ selectedLanguage }: DietTrackerProps) => {
+  const { t } = useTranslation(selectedLanguage);
+  const [activeTab, setActiveTab] = useState<"recommendations" | "tracker" | "water">("recommendations");
   const [selectedDisease, setSelectedDisease] = useState("");
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
+  const [waterIntake, setWaterIntake] = useState(0);
+  const [waterGoal] = useState(8); // 8 glasses per day
   const [newFood, setNewFood] = useState({
     name: "",
     calories: "",
@@ -53,7 +62,7 @@ const DietTracker = () => {
 
   const diseases = [
     "Diabetes",
-    "Hypertension",
+    "Hypertension", 
     "Heart Disease",
     "Kidney Disease",
     "Obesity",
@@ -101,6 +110,71 @@ const DietTracker = () => {
         "Limit cholesterol intake",
         "Eat plenty of fiber"
       ]
+    },
+    {
+      disease: "Kidney Disease",
+      foods: {
+        recommended: ["Cauliflower", "Bell peppers", "Cabbage", "Garlic", "Onions", "Apples", "Cranberries"],
+        avoid: ["High sodium foods", "Processed meats", "Whole grain bread", "Brown rice", "Bananas", "Oranges"]
+      },
+      tips: [
+        "Limit protein intake as advised by your doctor",
+        "Control phosphorus and potassium intake",
+        "Limit fluid intake if recommended",
+        "Choose low-sodium alternatives"
+      ]
+    },
+    {
+      disease: "Obesity",
+      foods: {
+        recommended: ["Lean proteins", "Vegetables", "Fruits", "Whole grains", "Legumes", "Low-fat dairy"],
+        avoid: ["Sugary beverages", "Fast food", "Processed snacks", "High-calorie desserts", "Fried foods"]
+      },
+      tips: [
+        "Create a calorie deficit for weight loss",
+        "Focus on portion control",
+        "Eat more fiber-rich foods",
+        "Stay hydrated and exercise regularly"
+      ]
+    },
+    {
+      disease: "PCOD/PCOS",
+      foods: {
+        recommended: ["Leafy greens", "Fatty fish", "Berries", "Nuts", "Seeds", "Lean proteins", "Whole grains"],
+        avoid: ["Refined carbs", "Sugary foods", "Processed foods", "Trans fats", "Excessive dairy"]
+      },
+      tips: [
+        "Choose low glycemic index foods",
+        "Include anti-inflammatory foods",
+        "Maintain stable blood sugar levels",
+        "Consider omega-3 supplements"
+      ]
+    },
+    {
+      disease: "Thyroid",
+      foods: {
+        recommended: ["Iodized salt", "Seafood", "Dairy products", "Eggs", "Brazil nuts", "Seaweed"],
+        avoid: ["Goitrogenic foods in excess", "Soy products", "Cruciferous vegetables (raw)", "Processed foods"]
+      },
+      tips: [
+        "Ensure adequate iodine intake",
+        "Cook goitrogenic vegetables before eating",
+        "Take thyroid medication on empty stomach",
+        "Monitor selenium intake"
+      ]
+    },
+    {
+      disease: "High Cholesterol",
+      foods: {
+        recommended: ["Oats", "Beans", "Fatty fish", "Nuts", "Olive oil", "Fruits", "Vegetables"],
+        avoid: ["Saturated fats", "Trans fats", "High cholesterol foods", "Fried foods", "Processed meats"]
+      },
+      tips: [
+        "Increase soluble fiber intake",
+        "Choose lean protein sources",
+        "Use healthy cooking oils",
+        "Limit dietary cholesterol to 300mg per day"
+      ]
     }
   ];
 
@@ -143,6 +217,21 @@ const DietTracker = () => {
     toast.success("Food entry removed");
   };
 
+  const addWater = () => {
+    if (waterIntake < waterGoal) {
+      setWaterIntake(waterIntake + 1);
+      if (waterIntake + 1 === waterGoal) {
+        toast.success(t("dailyWaterGoal"));
+      }
+    }
+  };
+
+  const removeWater = () => {
+    if (waterIntake > 0) {
+      setWaterIntake(waterIntake - 1);
+    }
+  };
+
   const getTotalCalories = () => {
     return foodEntries.reduce((total, entry) => total + entry.calories, 0);
   };
@@ -159,8 +248,8 @@ const DietTracker = () => {
           <Apple className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Diet Management</h1>
-          <p className="text-sm text-muted-foreground">Get personalized diet recommendations and track your meals</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("dietManagement")}</h1>
+          <p className="text-sm text-muted-foreground">{t("dietDescription")}</p>
         </div>
       </div>
 
@@ -175,7 +264,7 @@ const DietTracker = () => {
           }`}
         >
           <BookOpen className="h-4 w-4" />
-          Diet Recommendations
+          {t("dietRecommendations")}
         </button>
         <button
           onClick={() => setActiveTab("tracker")}
@@ -186,7 +275,18 @@ const DietTracker = () => {
           }`}
         >
           <Utensils className="h-4 w-4" />
-          Food Tracker
+          {t("foodTracker")}
+        </button>
+        <button
+          onClick={() => setActiveTab("water")}
+          className={`flex items-center gap-2 py-2 px-4 font-medium text-sm transition-colors border-b-2 ${
+            activeTab === "water"
+              ? "border-blue-500 text-blue-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <Droplets className="h-4 w-4" />
+          {t("waterIntake")}
         </button>
       </div>
 
@@ -197,7 +297,7 @@ const DietTracker = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5" />
-                Select Your Condition
+                {t("selectCondition")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -220,7 +320,7 @@ const DietTracker = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-green-600">Recommended Foods</CardTitle>
+                  <CardTitle className="text-green-600">{t("recommendedFoods")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -235,7 +335,7 @@ const DietTracker = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-red-600">Foods to Avoid</CardTitle>
+                  <CardTitle className="text-red-600">{t("foodsToAvoid")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -253,7 +353,7 @@ const DietTracker = () => {
           {currentRecommendation && (
             <Card>
               <CardHeader>
-                <CardTitle>Diet Tips for {selectedDisease}</CardTitle>
+                <CardTitle>{t("dietTips")} {selectedDisease}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
@@ -270,6 +370,62 @@ const DietTracker = () => {
         </div>
       )}
 
+      {/* Water Intake Tab */}
+      {activeTab === "water" && (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Droplets className="h-5 w-5 text-blue-500" />
+                {t("waterIntake")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center space-y-6">
+                <div className="relative">
+                  <div className="text-6xl font-bold text-blue-500">
+                    {waterIntake}
+                  </div>
+                  <div className="text-lg text-muted-foreground">
+                    / {waterGoal} {t("glassesOfWater")}
+                  </div>
+                </div>
+                
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div 
+                    className="bg-blue-500 h-4 rounded-full transition-all duration-300"
+                    style={{ width: `${(waterIntake / waterGoal) * 100}%` }}
+                  ></div>
+                </div>
+                
+                <div className="flex items-center justify-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={removeWater}
+                    disabled={waterIntake === 0}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={addWater}
+                    disabled={waterIntake >= waterGoal}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    {t("addWater")}
+                  </Button>
+                </div>
+                
+                <p className="text-sm text-muted-foreground">
+                  {t("waterGoal")}: {waterGoal} {t("glassesOfWater")}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Food Tracker Tab */}
       {activeTab === "tracker" && (
         <div className="space-y-6">
@@ -279,7 +435,7 @@ const DietTracker = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Calories</p>
+                    <p className="text-sm text-muted-foreground">{t("totalCalories")}</p>
                     <p className="text-2xl font-bold text-blue-600">{getTotalCalories()}</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-muted-foreground" />
@@ -290,7 +446,7 @@ const DietTracker = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Meals Logged</p>
+                    <p className="text-sm text-muted-foreground">{t("mealsLogged")}</p>
                     <p className="text-2xl font-bold text-green-600">{foodEntries.length}</p>
                   </div>
                   <Utensils className="h-8 w-8 text-muted-foreground" />
@@ -301,7 +457,7 @@ const DietTracker = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Last Entry</p>
+                    <p className="text-sm text-muted-foreground">{t("lastEntry")}</p>
                     <p className="text-2xl font-bold text-purple-600">
                       {foodEntries.length > 0 ? foodEntries[foodEntries.length - 1].time : "None"}
                     </p>
@@ -317,13 +473,13 @@ const DietTracker = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Plus className="h-5 w-5" />
-                Add Food Entry
+                {t("addFoodEntry")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="food-name">Food Name</Label>
+                  <Label htmlFor="food-name">{t("foodName")}</Label>
                   <Input
                     id="food-name"
                     value={newFood.name}
@@ -332,7 +488,7 @@ const DietTracker = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="calories">Calories</Label>
+                  <Label htmlFor="calories">{t("calories")}</Label>
                   <Input
                     id="calories"
                     type="number"
@@ -342,21 +498,21 @@ const DietTracker = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="meal">Meal Type</Label>
+                  <Label htmlFor="meal">{t("mealType")}</Label>
                   <select
                     id="meal"
                     value={newFood.meal}
                     onChange={(e) => setNewFood({...newFood, meal: e.target.value as any})}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    <option value="breakfast">Breakfast</option>
-                    <option value="lunch">Lunch</option>
-                    <option value="dinner">Dinner</option>
-                    <option value="snack">Snack</option>
+                    <option value="breakfast">{t("breakfast")}</option>
+                    <option value="lunch">{t("lunch")}</option>
+                    <option value="dinner">{t("dinner")}</option>
+                    <option value="snack">{t("snack")}</option>
                   </select>
                 </div>
                 <div>
-                  <Label htmlFor="protein">Protein (g)</Label>
+                  <Label htmlFor="protein">{t("protein")}</Label>
                   <Input
                     id="protein"
                     type="number"
@@ -366,7 +522,7 @@ const DietTracker = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="carbs">Carbs (g)</Label>
+                  <Label htmlFor="carbs">{t("carbs")}</Label>
                   <Input
                     id="carbs"
                     type="number"
@@ -376,7 +532,7 @@ const DietTracker = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="fat">Fat (g)</Label>
+                  <Label htmlFor="fat">{t("fat")}</Label>
                   <Input
                     id="fat"
                     type="number"
@@ -388,7 +544,7 @@ const DietTracker = () => {
               </div>
               <Button onClick={addFoodEntry} className="mt-4">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Food Entry
+                {t("addFoodEntry")}
               </Button>
             </CardContent>
           </Card>
@@ -401,7 +557,7 @@ const DietTracker = () => {
             return (
               <Card key={meal}>
                 <CardHeader>
-                  <CardTitle className="capitalize">{meal}</CardTitle>
+                  <CardTitle className="capitalize">{t(meal as any)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">

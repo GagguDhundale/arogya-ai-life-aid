@@ -1,29 +1,33 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Heart, Brain, QrCode, Stethoscope, Shield, Phone, Apple } from "lucide-react";
+import { AlertTriangle, Heart, Brain, QrCode, Stethoscope, Shield, Phone, Apple, FileText } from "lucide-react";
 import SymptomChecker from "@/components/SymptomChecker";
 import EmergencyProfile from "@/components/EmergencyProfile";
 import MentalHealthSupport from "@/components/MentalHealthSupport";
 import DietTracker from "@/components/DietTracker";
+import WeeklyReport from "@/components/WeeklyReport";
 import LanguageSelector from "@/components/LanguageSelector";
+import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [emergencyMode, setEmergencyMode] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const { t } = useTranslation(selectedLanguage);
 
   const handleEmergencyAlert = () => {
     setEmergencyMode(true);
-    toast.error("Emergency Alert Activated! Contacting emergency services...", {
+    toast.error(t("emergencyActivated"), {
       duration: 5000,
     });
     
     // Simulate emergency contact
     setTimeout(() => {
-      toast.success("Emergency contacts notified. Help is on the way!");
+      toast.success(t("emergencyContacted"));
       setEmergencyMode(false);
     }, 3000);
   };
@@ -34,10 +38,10 @@ const Index = () => {
   };
 
   const healthStats = [
-    { label: "Health Score", value: "85/100", color: "text-green-600", icon: Heart },
-    { label: "Last Checkup", value: "2 days ago", color: "text-blue-600", icon: Stethoscope },
-    { label: "Risk Level", value: "Low", color: "text-green-600", icon: Shield },
-    { label: "Alerts", value: "0 Active", color: "text-gray-600", icon: AlertTriangle },
+    { label: t("healthScore"), value: "85/100", color: "text-green-600", icon: Heart },
+    { label: t("lastCheckup"), value: t("daysAgo", "2"), color: "text-blue-600", icon: Stethoscope },
+    { label: t("riskLevel"), value: t("low"), color: "text-green-600", icon: Shield },
+    { label: t("alerts"), value: t("activeAlerts", "0"), color: "text-gray-600", icon: AlertTriangle },
   ];
 
   const renderContent = () => {
@@ -49,7 +53,9 @@ const Index = () => {
       case "mental-health":
         return <MentalHealthSupport />;
       case "diet":
-        return <DietTracker />;
+        return <DietTracker selectedLanguage={selectedLanguage} />;
+      case "weekly-report":
+        return <WeeklyReport selectedLanguage={selectedLanguage} />;
       default:
         return (
           <div className="space-y-6">
@@ -78,7 +84,7 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Stethoscope className="h-5 w-5" />
-                  Quick Health Actions
+                  {t("quickHealthActions")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -89,7 +95,7 @@ const Index = () => {
                     onClick={() => setActiveTab("symptoms")}
                   >
                     <Brain className="h-6 w-6" />
-                    Check Symptoms
+                    {t("checkSymptoms")}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -97,7 +103,7 @@ const Index = () => {
                     onClick={() => setActiveTab("emergency")}
                   >
                     <QrCode className="h-6 w-6" />
-                    Emergency Profile
+                    {t("emergencyProfile")}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -105,7 +111,7 @@ const Index = () => {
                     onClick={() => setActiveTab("mental-health")}
                   >
                     <Heart className="h-6 w-6" />
-                    Mental Health
+                    {t("mentalHealth")}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -113,7 +119,7 @@ const Index = () => {
                     onClick={() => setActiveTab("diet")}
                   >
                     <Apple className="h-6 w-6" />
-                    Diet Tracker
+                    {t("dietTracker")}
                   </Button>
                 </div>
               </CardContent>
@@ -122,30 +128,30 @@ const Index = () => {
             {/* Recent Activity */}
             <Card>
               <CardHeader>
-                <CardTitle>Recent Health Activity</CardTitle>
+                <CardTitle>{t("recentHealthActivity")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div>
-                      <p className="font-medium">Symptom Check Completed</p>
-                      <p className="text-sm text-muted-foreground">Mild headache - Low risk</p>
+                      <p className="font-medium">{t("symptomCheckCompleted")}</p>
+                      <p className="text-sm text-muted-foreground">{t("mildHeadacheLowRisk")}</p>
                     </div>
-                    <Badge variant="secondary">2 hours ago</Badge>
+                    <Badge variant="secondary">{t("hoursAgo", "2")}</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div>
-                      <p className="font-medium">Health Report Generated</p>
-                      <p className="text-sm text-muted-foreground">Weekly summary available</p>
+                      <p className="font-medium">{t("healthReportGenerated")}</p>
+                      <p className="text-sm text-muted-foreground">{t("weeklySummaryAvailable")}</p>
                     </div>
-                    <Badge variant="secondary">1 day ago</Badge>
+                    <Badge variant="secondary">{t("daysAgo", "1")}</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                     <div>
-                      <p className="font-medium">Diet Goal Achieved</p>
-                      <p className="text-sm text-muted-foreground">Daily calorie target met</p>
+                      <p className="font-medium">{t("dietGoalAchieved")}</p>
+                      <p className="text-sm text-muted-foreground">{t("dailyCalorieTargetMet")}</p>
                     </div>
-                    <Badge variant="secondary">Yesterday</Badge>
+                    <Badge variant="secondary">{t("yesterday")}</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -167,7 +173,7 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">ArogyaAI</h1>
-                <p className="text-xs text-muted-foreground">Your AI Health Companion</p>
+                <p className="text-xs text-muted-foreground">{t("aiHealthCompanion")}</p>
               </div>
             </div>
             
@@ -185,7 +191,7 @@ const Index = () => {
                 disabled={emergencyMode}
               >
                 <Phone className="h-4 w-4" />
-                {emergencyMode ? "Alerting..." : "Emergency"}
+                {emergencyMode ? t("alerting") : t("emergency")}
               </Button>
             </div>
           </div>
@@ -197,11 +203,12 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             {[
-              { id: "dashboard", label: "Dashboard", icon: Heart },
-              { id: "symptoms", label: "Symptom Checker", icon: Brain },
-              { id: "emergency", label: "Emergency", icon: AlertTriangle },
-              { id: "mental-health", label: "Mental Health", icon: Shield },
-              { id: "diet", label: "Diet Tracker", icon: Apple },
+              { id: "dashboard", label: t("dashboard"), icon: Heart },
+              { id: "symptoms", label: t("symptomChecker"), icon: Brain },
+              { id: "emergency", label: t("emergency"), icon: AlertTriangle },
+              { id: "mental-health", label: t("mentalHealth"), icon: Shield },
+              { id: "diet", label: t("dietTracker"), icon: Apple },
+              { id: "weekly-report", label: t("weeklyReport"), icon: FileText },
             ].map((tab) => {
               const IconComponent = tab.icon;
               return (
