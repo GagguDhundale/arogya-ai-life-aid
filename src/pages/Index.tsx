@@ -1,14 +1,15 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Heart, Brain, QrCode, Stethoscope, Shield, Phone, Apple, FileText } from "lucide-react";
+import { AlertTriangle, Heart, Brain, QrCode, Stethoscope, Shield, Phone, Apple, FileText, Syringe, Wind } from "lucide-react";
 import SymptomChecker from "@/components/SymptomChecker";
 import EmergencyProfile from "@/components/EmergencyProfile";
 import MentalHealthSupport from "@/components/MentalHealthSupport";
 import DietTracker from "@/components/DietTracker";
 import WeeklyReport from "@/components/WeeklyReport";
+import VaccineScheduler from "@/components/VaccineScheduler";
+import PollutionAllergyAlert from "@/components/PollutionAllergyAlert";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
@@ -56,6 +57,10 @@ const Index = () => {
         return <DietTracker selectedLanguage={selectedLanguage} />;
       case "weekly-report":
         return <WeeklyReport selectedLanguage={selectedLanguage} />;
+      case "vaccines":
+        return <VaccineScheduler />;
+      case "pollution-allergy":
+        return <PollutionAllergyAlert />;
       default:
         return (
           <div className="space-y-6">
@@ -100,18 +105,18 @@ const Index = () => {
                   <Button 
                     variant="outline" 
                     className="h-20 flex-col gap-2"
-                    onClick={() => setActiveTab("emergency")}
+                    onClick={() => setActiveTab("vaccines")}
                   >
-                    <QrCode className="h-6 w-6" />
-                    {t("emergencyProfile")}
+                    <Syringe className="h-6 w-6" />
+                    Vaccines
                   </Button>
                   <Button 
                     variant="outline" 
                     className="h-20 flex-col gap-2"
-                    onClick={() => setActiveTab("mental-health")}
+                    onClick={() => setActiveTab("pollution-allergy")}
                   >
-                    <Heart className="h-6 w-6" />
-                    {t("mentalHealth")}
+                    <Wind className="h-6 w-6" />
+                    Air Quality
                   </Button>
                   <Button 
                     variant="outline" 
@@ -141,17 +146,17 @@ const Index = () => {
                   </div>
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div>
-                      <p className="font-medium">{t("healthReportGenerated")}</p>
-                      <p className="text-sm text-muted-foreground">{t("weeklySummaryAvailable")}</p>
+                      <p className="font-medium">Vaccine Reminder Set</p>
+                      <p className="text-sm text-muted-foreground">COVID-19 booster due in 5 days</p>
                     </div>
-                    <Badge variant="secondary">{t("daysAgo", "1")}</Badge>
+                    <Badge variant="secondary">Today</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                     <div>
-                      <p className="font-medium">{t("dietGoalAchieved")}</p>
-                      <p className="text-sm text-muted-foreground">{t("dailyCalorieTargetMet")}</p>
+                      <p className="font-medium">Air Quality Alert</p>
+                      <p className="text-sm text-muted-foreground">High pollution detected in your area</p>
                     </div>
-                    <Badge variant="secondary">{t("yesterday")}</Badge>
+                    <Badge variant="secondary">{t("hoursAgo", "1")}</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -201,10 +206,12 @@ const Index = () => {
       {/* Navigation */}
       <nav className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
+          <div className="flex space-x-8 overflow-x-auto">
             {[
               { id: "dashboard", label: t("dashboard"), icon: Heart },
               { id: "symptoms", label: t("symptomChecker"), icon: Brain },
+              { id: "vaccines", label: "Vaccines", icon: Syringe },
+              { id: "pollution-allergy", label: "Air & Allergy", icon: Wind },
               { id: "emergency", label: t("emergency"), icon: AlertTriangle },
               { id: "mental-health", label: t("mentalHealth"), icon: Shield },
               { id: "diet", label: t("dietTracker"), icon: Apple },
@@ -215,7 +222,7 @@ const Index = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? "border-blue-500 text-blue-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
