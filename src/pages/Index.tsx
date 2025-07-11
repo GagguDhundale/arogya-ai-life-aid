@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import VaccineScheduler from "@/components/VaccineScheduler";
 import PollutionAllergyAlert from "@/components/PollutionAllergyAlert";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useTranslation } from "@/hooks/useTranslation";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
