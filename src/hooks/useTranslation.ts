@@ -167,6 +167,7 @@ const translations = {
   }
 };
 
+type TranslationValue = string | ((param: string) => string);
 type TranslationKey = keyof typeof translations.en;
 type SupportedLanguage = keyof typeof translations;
 
@@ -174,11 +175,11 @@ export const useTranslation = (language: string) => {
   const currentLang = (translations[language as SupportedLanguage] || translations.en);
   
   const t = (key: TranslationKey, param?: string): string => {
-    const translation = currentLang[key];
+    const translation: TranslationValue = currentLang[key];
     if (typeof translation === 'function') {
       return translation(param || '');
     }
-    return translation || translations.en[key] || key;
+    return translation || translations.en[key] as string || key;
   };
 
   return { t };
