@@ -122,14 +122,80 @@ const MentalHealthSupport = () => {
           </div>
 
           {currentMood && (
-            <div className="p-4 bg-blue-50 rounded-lg">
+            <div className="p-4 bg-blue-50 rounded-lg space-y-3">
               <p className="text-sm text-blue-800">
-                You're feeling <strong>{currentMood.label}</strong> today. 
-                {currentMood.value === "very-low" || currentMood.value === "sad" 
-                  ? " Remember, it's okay to not be okay. Consider reaching out for support."
-                  : " Keep taking care of yourself!"
-                }
+                You're feeling <strong>{currentMood.label}</strong> today.
               </p>
+              
+              {/* Mood-specific instructions */}
+              <div className="space-y-2">
+                {currentMood.value === "great" && (
+                  <div className="p-3 bg-green-50 rounded border border-green-200">
+                    <h5 className="font-medium text-green-800 mb-1">Great mood today! 🌟</h5>
+                    <ul className="text-sm text-green-700 space-y-1">
+                      <li>• Share your positive energy with others</li>
+                      <li>• Consider starting a new healthy habit</li>
+                      <li>• Reflect on what made you feel this good</li>
+                      <li>• Use this energy for productive activities</li>
+                    </ul>
+                  </div>
+                )}
+                
+                {currentMood.value === "good" && (
+                  <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                    <h5 className="font-medium text-blue-800 mb-1">Feeling good! 😊</h5>
+                    <ul className="text-sm text-blue-700 space-y-1">
+                      <li>• Maintain your current routine</li>
+                      <li>• Practice gratitude for 5 minutes</li>
+                      <li>• Connect with friends or family</li>
+                      <li>• Consider some light exercise or walk</li>
+                    </ul>
+                  </div>
+                )}
+                
+                {currentMood.value === "okay" && (
+                  <div className="p-3 bg-yellow-50 rounded border border-yellow-200">
+                    <h5 className="font-medium text-yellow-800 mb-1">It's okay to feel neutral 😐</h5>
+                    <ul className="text-sm text-yellow-700 space-y-1">
+                      <li>• Try a mindfulness exercise (5-10 minutes)</li>
+                      <li>• Listen to your favorite music</li>
+                      <li>• Do something small that usually makes you smile</li>
+                      <li>• Focus on one positive thing from today</li>
+                    </ul>
+                  </div>
+                )}
+                
+                {currentMood.value === "sad" && (
+                  <div className="p-3 bg-orange-50 rounded border border-orange-200">
+                    <h5 className="font-medium text-orange-800 mb-1">Having a tough day 😔</h5>
+                    <ul className="text-sm text-orange-700 space-y-1">
+                      <li>• Practice deep breathing (4-7-8 technique)</li>
+                      <li>• Reach out to someone you trust</li>
+                      <li>• Do a gentle activity like stretching</li>
+                      <li>• Remember: this feeling is temporary</li>
+                      <li>• Consider professional support if this persists</li>
+                    </ul>
+                  </div>
+                )}
+                
+                {currentMood.value === "very-low" && (
+                  <div className="p-3 bg-red-50 rounded border border-red-200">
+                    <h5 className="font-medium text-red-800 mb-1">You're going through a very difficult time 😢</h5>
+                    <ul className="text-sm text-red-700 space-y-1">
+                      <li>• <strong>Immediate action:</strong> Contact a mental health helpline</li>
+                      <li>• Reach out to a trusted friend/family member right now</li>
+                      <li>• Practice grounding: Name 5 things you can see, 4 you can touch</li>
+                      <li>• Avoid being alone if possible</li>
+                      <li>• Remember: You matter, and help is available</li>
+                    </ul>
+                    <div className="mt-3 p-2 bg-red-100 rounded">
+                      <p className="text-xs text-red-800 font-medium">
+                        If you're having thoughts of self-harm, call emergency helpline immediately: 91-9152987821
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </CardContent>

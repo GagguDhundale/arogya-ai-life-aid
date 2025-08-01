@@ -15,7 +15,9 @@ import {
   Trash2,
   BookOpen,
   Droplets,
-  Minus
+  Minus,
+  Sun,
+  Moon
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
@@ -467,6 +469,58 @@ const DietTracker = ({ selectedLanguage }: DietTrackerProps) => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Meal Timing Suggestions */}
+          <Card className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-blue-800">
+                <Clock className="h-5 w-5" />
+                Optimal Meal Timing Suggestions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="p-3 bg-white rounded border border-orange-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sun className="h-4 w-4 text-orange-500" />
+                    <span className="font-medium text-orange-700">{t("breakfast")}</span>
+                  </div>
+                  <p className="text-sm text-orange-600 font-medium">7:00 - 9:00 AM</p>
+                  <p className="text-xs text-orange-500 mt-1">Within 1-2 hours of waking up</p>
+                </div>
+                <div className="p-3 bg-white rounded border border-yellow-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sun className="h-4 w-4 text-yellow-500" />
+                    <span className="font-medium text-yellow-700">{t("lunch")}</span>
+                  </div>
+                  <p className="text-sm text-yellow-600 font-medium">12:00 - 2:00 PM</p>
+                  <p className="text-xs text-yellow-500 mt-1">Peak metabolism time</p>
+                </div>
+                <div className="p-3 bg-white rounded border border-purple-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Moon className="h-4 w-4 text-purple-500" />
+                    <span className="font-medium text-purple-700">{t("dinner")}</span>
+                  </div>
+                  <p className="text-sm text-purple-600 font-medium">6:00 - 8:00 PM</p>
+                  <p className="text-xs text-purple-500 mt-1">3 hours before bedtime</p>
+                </div>
+                <div className="p-3 bg-white rounded border border-green-200">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Apple className="h-4 w-4 text-green-500" />
+                    <span className="font-medium text-green-700">{t("snack")}</span>
+                  </div>
+                  <p className="text-sm text-green-600 font-medium">10:30 AM / 4:00 PM</p>
+                  <p className="text-xs text-green-500 mt-1">Between main meals</p>
+                </div>
+              </div>
+              <div className="mt-3 p-2 bg-blue-100 rounded">
+                <p className="text-xs text-blue-700">
+                  💡 <strong>Tip:</strong> Eating at consistent times helps regulate metabolism and improves digestion. 
+                  Avoid eating large meals 3 hours before bedtime for better sleep quality.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Add Food Entry */}
           <Card>

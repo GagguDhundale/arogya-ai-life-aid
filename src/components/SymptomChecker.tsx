@@ -56,12 +56,121 @@ const SymptomChecker = () => {
     setIsAnalyzing(true);
     console.log("Analyzing symptoms:", symptoms);
 
-    // Simulate AI analysis
+    // Enhanced AI analysis with multiple condition detection
     setTimeout(() => {
-      setAnalysis(mockAnalysis);
+      const input = symptoms.toLowerCase();
+      let detectedSymptoms = [];
+      let conditions = [];
+      let urgency = "Monitor at home";
+      let recommendations = [];
+
+      // Symptom detection
+      if (input.includes("fever") || input.includes("temperature") || input.includes("hot")) {
+        detectedSymptoms.push("Fever");
+      }
+      if (input.includes("headache") || input.includes("head pain")) {
+        detectedSymptoms.push("Headache");
+      }
+      if (input.includes("cough") || input.includes("coughing")) {
+        detectedSymptoms.push("Cough");
+      }
+      if (input.includes("sore throat") || input.includes("throat pain")) {
+        detectedSymptoms.push("Sore Throat");
+      }
+      if (input.includes("nausea") || input.includes("vomit") || input.includes("sick")) {
+        detectedSymptoms.push("Nausea");
+      }
+      if (input.includes("dizzy") || input.includes("dizziness") || input.includes("lightheaded")) {
+        detectedSymptoms.push("Dizziness");
+      }
+      if (input.includes("chest pain") || input.includes("chest pressure")) {
+        detectedSymptoms.push("Chest Pain");
+        urgency = "Seek immediate medical attention";
+      }
+      if (input.includes("shortness of breath") || input.includes("breathing") || input.includes("breathless")) {
+        detectedSymptoms.push("Breathing Difficulty");
+        urgency = "Consult doctor soon";
+      }
+      if (input.includes("rash") || input.includes("skin") || input.includes("itchy")) {
+        detectedSymptoms.push("Skin Rash");
+      }
+      if (input.includes("stomach") || input.includes("abdomen") || input.includes("belly")) {
+        detectedSymptoms.push("Abdominal Pain");
+      }
+
+      // Condition analysis based on symptom combinations
+      if (detectedSymptoms.includes("Fever") && detectedSymptoms.includes("Headache")) {
+        conditions.push({ name: "Viral Fever", probability: 80, severity: "moderate" });
+        conditions.push({ name: "Common Cold", probability: 65, severity: "mild" });
+        recommendations.push("Rest and stay hydrated", "Take paracetamol for fever", "Monitor temperature");
+      }
+      
+      if (detectedSymptoms.includes("Cough") && detectedSymptoms.includes("Sore Throat")) {
+        conditions.push({ name: "Upper Respiratory Infection", probability: 75, severity: "mild" });
+        recommendations.push("Gargle with warm salt water", "Stay hydrated", "Use humidifier");
+      }
+
+      if (detectedSymptoms.includes("Chest Pain")) {
+        conditions.push({ name: "Cardiac Event (Requires Immediate Attention)", probability: 60, severity: "severe" });
+        conditions.push({ name: "Anxiety/Panic Attack", probability: 40, severity: "moderate" });
+        recommendations.push("Call emergency services immediately", "Avoid physical exertion", "Chew aspirin if no allergies");
+      }
+
+      if (detectedSymptoms.includes("Breathing Difficulty")) {
+        conditions.push({ name: "Asthma Exacerbation", probability: 70, severity: "moderate" });
+        conditions.push({ name: "Respiratory Infection", probability: 50, severity: "moderate" });
+        recommendations.push("Use rescue inhaler if available", "Sit upright", "Seek medical attention");
+      }
+
+      if (detectedSymptoms.includes("Nausea") && detectedSymptoms.includes("Abdominal Pain")) {
+        conditions.push({ name: "Gastroenteritis", probability: 75, severity: "mild" });
+        conditions.push({ name: "Food Poisoning", probability: 60, severity: "moderate" });
+        recommendations.push("Stay hydrated with small sips", "BRAT diet (Banana, Rice, Applesauce, Toast)", "Rest");
+      }
+
+      if (detectedSymptoms.includes("Headache") && detectedSymptoms.includes("Dizziness")) {
+        conditions.push({ name: "Migraine", probability: 70, severity: "moderate" });
+        conditions.push({ name: "Tension Headache", probability: 55, severity: "mild" });
+        recommendations.push("Rest in dark, quiet room", "Apply cold/warm compress", "Stay hydrated");
+      }
+
+      if (detectedSymptoms.includes("Skin Rash")) {
+        conditions.push({ name: "Allergic Reaction", probability: 65, severity: "mild" });
+        conditions.push({ name: "Dermatitis", probability: 50, severity: "mild" });
+        recommendations.push("Avoid known allergens", "Apply cool compress", "Consider antihistamine");
+      }
+
+      // Default analysis if no specific patterns detected
+      if (detectedSymptoms.length === 0) {
+        detectedSymptoms = ["General symptoms"];
+        conditions = [
+          { name: "Minor Health Concern", probability: 60, severity: "mild" },
+          { name: "Stress/Fatigue", probability: 40, severity: "mild" }
+        ];
+        recommendations = ["Get adequate rest", "Stay hydrated", "Monitor symptoms"];
+      }
+
+      // General recommendations
+      if (!recommendations.length) {
+        recommendations = ["Monitor symptoms closely", "Stay hydrated", "Get rest"];
+      }
+
+      setAnalysis({
+        symptoms: detectedSymptoms,
+        conditions: conditions.length ? conditions : [
+          { name: "General Health Concern", probability: 50, severity: "mild" }
+        ],
+        recommendations,
+        urgency,
+        nextSteps: urgency === "Seek immediate medical attention" 
+          ? "Call emergency services (112) immediately"
+          : urgency === "Consult doctor soon"
+          ? "Schedule appointment with healthcare provider within 24 hours"
+          : "Consult a doctor if symptoms worsen or persist beyond 2-3 days"
+      });
       setIsAnalyzing(false);
-      toast.success("Analysis complete! Review your results below.");
-    }, 2000);
+      toast.success("Comprehensive symptom analysis completed!");
+    }, 3000);
   };
 
   const getSeverityColor = (severity) => {
@@ -145,25 +254,24 @@ const SymptomChecker = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="grid gap-3">
-                  {analysis.conditions.map((condition, index) => (
-                    <div key={index} className="p-4 border rounded-lg space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold">{condition.name}</h3>
-                          <Badge className={getSeverityColor(condition.severity)}>
-                            {condition.severity}
-                          </Badge>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-lg font-bold text-blue-600">{condition.confidence}%</div>
-                          <div className="text-xs text-muted-foreground">Confidence</div>
-                        </div>
-                      </div>
-                      <Progress value={condition.confidence} className="h-2" />
-                      <p className="text-sm text-muted-foreground">{condition.description}</p>
-                    </div>
-                  ))}
+                 <div className="grid gap-3">
+                   {analysis.conditions.map((condition, index) => (
+                     <div key={index} className="p-4 border rounded-lg space-y-2">
+                       <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                           <h3 className="font-semibold">{condition.name}</h3>
+                           <Badge className={getSeverityColor(condition.severity)}>
+                             {condition.severity}
+                           </Badge>
+                         </div>
+                         <div className="text-right">
+                           <div className="text-lg font-bold text-blue-600">{condition.probability}%</div>
+                           <div className="text-xs text-muted-foreground">Probability</div>
+                         </div>
+                       </div>
+                       <Progress value={condition.probability} className="h-2" />
+                     </div>
+                   ))}
                 </div>
               </div>
             </CardContent>

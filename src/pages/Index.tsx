@@ -130,6 +130,80 @@ const Index = () => {
               </CardContent>
             </Card>
 
+            {/* Feature Summaries */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("featureSummaries")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Brain className="h-5 w-5 text-blue-600" />
+                      <h4 className="font-semibold text-blue-800">{t("symptomChecker")}</h4>
+                    </div>
+                    <p className="text-sm text-blue-700 mb-3">{t("symptomCheckerSummary")}</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-blue-600 border-blue-300">
+                        {t("lastUsed")}: {t("hoursAgo", "6")}
+                      </Badge>
+                      <Badge variant="outline" className="text-green-600 border-green-300">
+                        {t("accuracy")}: 94%
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Shield className="h-5 w-5 text-green-600" />
+                      <h4 className="font-semibold text-green-800">{t("mentalHealth")}</h4>
+                    </div>
+                    <p className="text-sm text-green-700 mb-3">{t("mentalHealthSummary")}</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-green-600 border-green-300">
+                        {t("moodToday")}: {t("good")}
+                      </Badge>
+                      <Badge variant="outline" className="text-blue-600 border-blue-300">
+                        {t("streak")}: 5 {t("days")}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Apple className="h-5 w-5 text-orange-600" />
+                      <h4 className="font-semibold text-orange-800">{t("dietTracker")}</h4>
+                    </div>
+                    <p className="text-sm text-orange-700 mb-3">{t("dietTrackerSummary")}</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-orange-600 border-orange-300">
+                        {t("todaysCalories")}: 1,847/2,200
+                      </Badge>
+                      <Badge variant="outline" className="text-green-600 border-green-300">
+                        {t("onTrack")}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Syringe className="h-5 w-5 text-purple-600" />
+                      <h4 className="font-semibold text-purple-800">{t("vaccineScheduler")}</h4>
+                    </div>
+                    <p className="text-sm text-purple-700 mb-3">{t("vaccineSchedulerSummary")}</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-purple-600 border-purple-300">
+                        {t("nextDue")}: {t("daysAgo", "5")}
+                      </Badge>
+                      <Badge variant="outline" className="text-green-600 border-green-300">
+                        {t("upToDate")}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Recent Activity */}
             <Card>
               <CardHeader>
@@ -146,15 +220,15 @@ const Index = () => {
                   </div>
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div>
-                      <p className="font-medium">Vaccine Reminder Set</p>
-                      <p className="text-sm text-muted-foreground">COVID-19 booster due in 5 days</p>
+                      <p className="font-medium">{t("vaccineReminderSet")}</p>
+                      <p className="text-sm text-muted-foreground">{t("covidBoosterDue")}</p>
                     </div>
-                    <Badge variant="secondary">Today</Badge>
+                    <Badge variant="secondary">{t("today")}</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                     <div>
-                      <p className="font-medium">Air Quality Alert</p>
-                      <p className="text-sm text-muted-foreground">High pollution detected in your area</p>
+                      <p className="font-medium">{t("airQualityAlert")}</p>
+                      <p className="text-sm text-muted-foreground">{t("highPollutionDetected")}</p>
                     </div>
                     <Badge variant="secondary">{t("hoursAgo", "1")}</Badge>
                   </div>
