@@ -14,7 +14,229 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          created_at: string | null
+          doctor_id: string
+          duration: unknown | null
+          id: string
+          notes: string | null
+          patient_id: string
+          scheduled_time: string
+          status: string | null
+          type: string | null
+          updated_at: string | null
+          video_call_link: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          doctor_id: string
+          duration?: unknown | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          scheduled_time: string
+          status?: string | null
+          type?: string | null
+          updated_at?: string | null
+          video_call_link?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          doctor_id?: string
+          duration?: unknown | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          scheduled_time?: string
+          status?: string | null
+          type?: string | null
+          updated_at?: string | null
+          video_call_link?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_patient_relationships: {
+        Row: {
+          created_at: string | null
+          doctor_id: string
+          id: string
+          is_active: boolean | null
+          patient_id: string
+          sharing_initiated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          doctor_id: string
+          id?: string
+          is_active?: boolean | null
+          patient_id: string
+          sharing_initiated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          doctor_id?: string
+          id?: string
+          is_active?: boolean | null
+          patient_id?: string
+          sharing_initiated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_patient_relationships_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_patient_relationships_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctors: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          license_number: string | null
+          specialty: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          license_number?: string | null
+          specialty?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          license_number?: string | null
+          specialty?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      patients: {
+        Row: {
+          created_at: string | null
+          date_of_birth: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shared_health_reports: {
+        Row: {
+          ai_insights: string | null
+          created_at: string | null
+          doctor_id: string
+          id: string
+          is_urgent: boolean | null
+          patient_id: string
+          relationship_id: string
+          report_data: Json
+          title: string
+        }
+        Insert: {
+          ai_insights?: string | null
+          created_at?: string | null
+          doctor_id: string
+          id?: string
+          is_urgent?: boolean | null
+          patient_id: string
+          relationship_id: string
+          report_data: Json
+          title: string
+        }
+        Update: {
+          ai_insights?: string | null
+          created_at?: string | null
+          doctor_id?: string
+          id?: string
+          is_urgent?: boolean | null
+          patient_id?: string
+          relationship_id?: string
+          report_data?: Json
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_health_reports_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_health_reports_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_health_reports_relationship_id_fkey"
+            columns: ["relationship_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_patient_relationships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

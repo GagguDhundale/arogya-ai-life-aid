@@ -80,7 +80,7 @@ export default function DoctorDashboard() {
         .from('doctor_patient_relationships')
         .select(`
           patient_id,
-          patients!inner(
+          patients (
             id,
             first_name,
             last_name,
@@ -102,12 +102,12 @@ export default function DoctorDashboard() {
       if (reportsError) throw reportsError;
 
       // Process patient data
-      const patientList: Patient[] = relationships?.map(rel => {
+      const patientList: Patient[] = relationships?.map((rel: any) => {
         const patient = rel.patients;
-        const patientReports = reports?.filter(r => r.patient_id === patient.id) || [];
+        const patientReports = reports?.filter((r: any) => r.patient_id === patient.id) || [];
         const latestReport = patientReports[0];
         const hasNewData = latestReport && new Date(latestReport.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
-        const riskLevel = patientReports.some(r => r.is_urgent) ? 'high' : 
+        const riskLevel = patientReports.some((r: any) => r.is_urgent) ? 'high' : 
                          patientReports.length > 3 ? 'medium' : 'low';
 
         return {

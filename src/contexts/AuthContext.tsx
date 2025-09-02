@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 .from('doctors')
                 .select('id')
                 .eq('user_id', session.user.id)
-                .single();
+                .maybeSingle();
 
               if (doctorData) {
                 setUserType('doctor');
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   .from('patients')
                   .select('id')
                   .eq('user_id', session.user.id)
-                  .single();
+                  .maybeSingle();
                 
                 if (patientData) {
                   setUserType('patient');

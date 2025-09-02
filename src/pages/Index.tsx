@@ -1,34 +1,47 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Heart, Brain, QrCode, Stethoscope, Shield, Phone, Apple, FileText, Syringe, Wind } from "lucide-react";
-import SymptomChecker from "@/components/SymptomChecker";
-import EmergencyProfile from "@/components/EmergencyProfile";
-import MentalHealthSupport from "@/components/MentalHealthSupport";
-import DietTracker from "@/components/DietTracker";
-import WeeklyReport from "@/components/WeeklyReport";
-import VaccineScheduler from "@/components/VaccineScheduler";
-import PollutionAllergyAlert from "@/components/PollutionAllergyAlert";
-import LanguageSelector from "@/components/LanguageSelector";
-import { useTranslation } from "@/hooks/useTranslation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertTriangle, Heart, Activity, Calendar, Shield, Brain, Apple, Pill, AlertCircle, Globe, Phone, LogOut } from 'lucide-react';
+import SymptomChecker from '@/components/SymptomChecker';
+import EmergencyProfile from '@/components/EmergencyProfile';
+import DietTracker from '@/components/DietTracker';
+import MentalHealthSupport from '@/components/MentalHealthSupport';
+import VaccineScheduler from '@/components/VaccineScheduler';
+import PollutionAllergyAlert from '@/components/PollutionAllergyAlert';
+import WeeklyReport from '@/components/WeeklyReport';
+import LanguageSelector from '@/components/LanguageSelector';
+import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from "sonner";
 
-const Index = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+export default function Index() {
+  const { user, userType, signOut } = useAuth();
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [emergencyMode, setEmergencyMode] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const { t } = useTranslation(selectedLanguage);
+
+  // Redirect if not authenticated or if doctor tries to access patient dashboard
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (userType === 'doctor') {
+    return <Navigate to="/doctor-dashboard" replace />;
+  }
 
   const handleEmergencyAlert = () => {
     setEmergencyMode(true);
-    toast.error(t("emergencyActivated"), {
+    toast.error("Emergency activated! Contacting emergency services...", {
       duration: 5000,
     });
     
     // Simulate emergency contact
     setTimeout(() => {
-      toast.success(t("emergencyContacted"));
+      toast.success("Emergency services contacted successfully");
       setEmergencyMode(false);
     }, 3000);
   };
@@ -40,9 +53,9 @@ const Index = () => {
 
   const healthStats = [
     { label: t("healthScore"), value: "85/100", color: "text-green-600", icon: Heart },
-    { label: t("lastCheckup"), value: t("daysAgo", "2"), color: "text-blue-600", icon: Stethoscope },
+    { label: t("lastCheckup"), value: "2 days ago", color: "text-blue-600", icon: Activity },
     { label: t("riskLevel"), value: t("low"), color: "text-green-600", icon: Shield },
-    { label: t("alerts"), value: t("activeAlerts", "0"), color: "text-gray-600", icon: AlertTriangle },
+    { label: t("alerts"), value: "0 active", color: "text-gray-600", icon: AlertTriangle },
   ];
 
   const renderContent = () => {
@@ -88,7 +101,7 @@ const Index = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Stethoscope className="h-5 w-5" />
+                  <Activity className="h-5 w-5" />
                   {t("quickHealthActions")}
                 </CardTitle>
               </CardHeader>
@@ -107,15 +120,15 @@ const Index = () => {
                     className="h-20 flex-col gap-2"
                     onClick={() => setActiveTab("vaccines")}
                   >
-                    <Syringe className="h-6 w-6" />
-                    Vaccines
+                    <Pill className="h-6 w-6" />
+                    {t("vaccineScheduler")}
                   </Button>
                   <Button 
                     variant="outline" 
                     className="h-20 flex-col gap-2"
                     onClick={() => setActiveTab("pollution-allergy")}
                   >
-                    <Wind className="h-6 w-6" />
+                    <Globe className="h-6 w-6" />
                     Air Quality
                   </Button>
                   <Button 
@@ -133,7 +146,7 @@ const Index = () => {
             {/* Feature Summaries */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("featureSummaries")}</CardTitle>
+                <CardTitle>Feature Summaries</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -142,13 +155,13 @@ const Index = () => {
                       <Brain className="h-5 w-5 text-blue-600" />
                       <h4 className="font-semibold text-blue-800">{t("symptomChecker")}</h4>
                     </div>
-                    <p className="text-sm text-blue-700 mb-3">{t("symptomCheckerSummary")}</p>
+                    <p className="text-sm text-blue-700 mb-3">AI-powered symptom analysis and health recommendations</p>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-blue-600 border-blue-300">
-                        {t("lastUsed")}: {t("hoursAgo", "6")}
+                        Last used: 6 hours ago
                       </Badge>
                       <Badge variant="outline" className="text-green-600 border-green-300">
-                        {t("accuracy")}: 94%
+                        Accuracy: 94%
                       </Badge>
                     </div>
                   </div>
@@ -158,13 +171,13 @@ const Index = () => {
                       <Shield className="h-5 w-5 text-green-600" />
                       <h4 className="font-semibold text-green-800">{t("mentalHealth")}</h4>
                     </div>
-                    <p className="text-sm text-green-700 mb-3">{t("mentalHealthSummary")}</p>
+                    <p className="text-sm text-green-700 mb-3">Track your mental wellbeing and get personalized support</p>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-green-600 border-green-300">
-                        {t("moodToday")}: {t("good")}
+                        Mood today: Good
                       </Badge>
                       <Badge variant="outline" className="text-blue-600 border-blue-300">
-                        {t("streak")}: 5 {t("days")}
+                        Streak: 5 days
                       </Badge>
                     </div>
                   </div>
@@ -174,29 +187,29 @@ const Index = () => {
                       <Apple className="h-5 w-5 text-orange-600" />
                       <h4 className="font-semibold text-orange-800">{t("dietTracker")}</h4>
                     </div>
-                    <p className="text-sm text-orange-700 mb-3">{t("dietTrackerSummary")}</p>
+                    <p className="text-sm text-orange-700 mb-3">Monitor nutrition and get personalized meal recommendations</p>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-orange-600 border-orange-300">
-                        {t("todaysCalories")}: 1,847/2,200
+                        Today's calories: 1,847/2,200
                       </Badge>
                       <Badge variant="outline" className="text-green-600 border-green-300">
-                        {t("onTrack")}
+                        On track
                       </Badge>
                     </div>
                   </div>
 
                   <div className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200">
                     <div className="flex items-center gap-3 mb-2">
-                      <Syringe className="h-5 w-5 text-purple-600" />
+                      <Pill className="h-5 w-5 text-purple-600" />
                       <h4 className="font-semibold text-purple-800">{t("vaccineScheduler")}</h4>
                     </div>
-                    <p className="text-sm text-purple-700 mb-3">{t("vaccineSchedulerSummary")}</p>
+                    <p className="text-sm text-purple-700 mb-3">Stay up-to-date with vaccination schedules and reminders</p>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-purple-600 border-purple-300">
-                        {t("nextDue")}: {t("daysAgo", "5")}
+                        Next due: 5 days
                       </Badge>
                       <Badge variant="outline" className="text-green-600 border-green-300">
-                        {t("upToDate")}
+                        Up to date
                       </Badge>
                     </div>
                   </div>
@@ -207,30 +220,30 @@ const Index = () => {
             {/* Recent Activity */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("recentHealthActivity")}</CardTitle>
+                <CardTitle>Recent Health Activity</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                     <div>
-                      <p className="font-medium">{t("symptomCheckCompleted")}</p>
-                      <p className="text-sm text-muted-foreground">{t("mildHeadacheLowRisk")}</p>
+                      <p className="font-medium">Symptom check completed</p>
+                      <p className="text-sm text-muted-foreground">Mild headache - Low risk assessment</p>
                     </div>
-                    <Badge variant="secondary">{t("hoursAgo", "2")}</Badge>
+                    <Badge variant="secondary">2 hours ago</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                     <div>
-                      <p className="font-medium">{t("vaccineReminderSet")}</p>
-                      <p className="text-sm text-muted-foreground">{t("covidBoosterDue")}</p>
+                      <p className="font-medium">Vaccine reminder set</p>
+                      <p className="text-sm text-muted-foreground">COVID-19 booster due in 5 days</p>
                     </div>
-                    <Badge variant="secondary">{t("today")}</Badge>
+                    <Badge variant="secondary">Today</Badge>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                     <div>
-                      <p className="font-medium">{t("airQualityAlert")}</p>
-                      <p className="text-sm text-muted-foreground">{t("highPollutionDetected")}</p>
+                      <p className="font-medium">Air quality alert</p>
+                      <p className="text-sm text-muted-foreground">High pollution detected in your area</p>
                     </div>
-                    <Badge variant="secondary">{t("hoursAgo", "1")}</Badge>
+                    <Badge variant="secondary">1 hour ago</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -241,36 +254,41 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-blue-600 to-green-600 p-2 rounded-lg">
-                <Heart className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">ArogyaAI</h1>
-                <p className="text-xs text-muted-foreground">{t("aiHealthCompanion")}</p>
-              </div>
+      <header className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Heart className="h-8 w-8 text-primary" />
+              <span className="text-2xl font-bold text-primary">Arogya-AI</span>
+              <Badge variant="secondary">Patient</Badge>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center space-x-4">
               <LanguageSelector 
                 currentLanguage={selectedLanguage}
                 onLanguageChange={handleLanguageChange}
               />
               
-              <Button
-                variant="destructive"
+              <Button 
+                variant="destructive" 
                 size="sm"
-                className={`flex items-center gap-2 ${emergencyMode ? 'animate-pulse' : ''}`}
                 onClick={handleEmergencyAlert}
-                disabled={emergencyMode}
+                className="flex items-center gap-2"
               >
                 <Phone className="h-4 w-4" />
-                {emergencyMode ? t("alerting") : t("emergency")}
+                {t("emergency")}
+              </Button>
+
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={signOut}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
               </Button>
             </div>
           </div>
@@ -278,18 +296,18 @@ const Index = () => {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="border-b border-border bg-card">
+        <div className="container mx-auto px-4">
           <div className="flex space-x-8 overflow-x-auto">
             {[
               { id: "dashboard", label: t("dashboard"), icon: Heart },
               { id: "symptoms", label: t("symptomChecker"), icon: Brain },
-              { id: "vaccines", label: "Vaccines", icon: Syringe },
-              { id: "pollution-allergy", label: "Air & Allergy", icon: Wind },
+              { id: "vaccines", label: t("vaccineScheduler"), icon: Pill },
+              { id: "pollution-allergy", label: "Air Quality", icon: Globe },
               { id: "emergency", label: t("emergency"), icon: AlertTriangle },
               { id: "mental-health", label: t("mentalHealth"), icon: Shield },
               { id: "diet", label: t("dietTracker"), icon: Apple },
-              { id: "weekly-report", label: t("weeklyReport"), icon: FileText },
+              { id: "weekly-report", label: t("weeklyReport"), icon: Calendar },
             ].map((tab) => {
               const IconComponent = tab.icon;
               return (
@@ -298,8 +316,8 @@ const Index = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                     activeTab === tab.id
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground"
                   }`}
                 >
                   <IconComponent className="h-4 w-4" />
@@ -312,11 +330,9 @@ const Index = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container mx-auto px-4 py-8">
         {renderContent()}
       </main>
     </div>
   );
-};
-
-export default Index;
+}
