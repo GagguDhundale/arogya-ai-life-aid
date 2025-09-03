@@ -23,6 +23,8 @@ For Patients:
 🍎 Diet & Nutrition Tracker: Monitor your meals and water intake with personalized goals.
 🆘 Emergency Profile: Securely store critical medical information for emergencies.
 📊 Weekly Health Reports: Get personalized insights and actionable health goals.
+
+
 For Doctors:
 
 👨‍💻 Professional Dashboard: A clinical-grade interface for patient management.
