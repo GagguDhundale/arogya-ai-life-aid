@@ -24,6 +24,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import PatientProfileModal from '@/components/PatientProfileModal';
+import MedicalImageUpload from '@/components/MedicalImageUpload';
+import VoiceAssistant from '@/components/VoiceAssistant';
+import PatientMessaging from '@/components/PatientMessaging';
 
 interface Patient {
   id: string;
@@ -508,50 +511,43 @@ export default function DoctorDashboard() {
           <TabsContent value="communication" className="space-y-6">
             {/* Communication Hub */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Bell className="h-5 w-5 text-primary" />
-                    Patient Messages
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-start space-x-3 p-3 border border-border rounded-lg">
-                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="text-primary font-semibold">PS</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-semibold">Priya Sharma</h4>
-                          <Badge variant="outline">New</Badge>
+              <PatientMessaging
+                patientId="sample-patient-id"
+                patientName="Priya Sharma"
+                onVideoCall={() => toast.success('Launching video call...')}
+                onScheduleAppointment={() => toast.success('Opening appointment scheduler...')}
+              />
+              
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Bell className="h-5 w-5 text-primary" />
+                      Recent Messages
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {filteredPatients.slice(0, 5).map((patient) => (
+                        <div key={patient.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                          <div>
+                            <h4 className="font-medium">{patient.first_name} {patient.last_name}</h4>
+                            <p className="text-sm text-muted-foreground">Last message: 2 hours ago</p>
+                          </div>
+                          <Badge variant="outline">2 new</Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          My headaches have been getting worse since yesterday...
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">2 minutes ago</p>
-                      </div>
+                      ))}
                     </div>
-                    
-                    <div className="flex items-start space-x-3 p-3 border border-border rounded-lg">
-                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="text-primary font-semibold">RK</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-semibold">Raj Kumar</h4>
-                          <Badge variant="secondary">Read</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Thank you for the prescription. I'm feeling much better.
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">1 hour ago</p>
-                      </div>
-                    </div>
-                  </div>
-                  <Button className="w-full mt-4">View All Messages</Button>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                <MedicalImageUpload
+                  patientId="sample-patient-id"
+                  onImageAnalyzed={(analysis) => {
+                    toast.success(`Image analyzed: ${analysis.recommendation}`);
+                  }}
+                />
+              </div>
 
               <Card>
                 <CardHeader>
@@ -742,26 +738,21 @@ export default function DoctorDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {/* Voice Commands */}
-                  <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">Voice-Activated Assistant</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Say "Hey Aarogya" to activate voice commands
-                        </p>
-                      </div>
-                      <Button variant="outline" size="sm" className="ml-auto">
-                        🎤 Activate
-                      </Button>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Try: "Show me Priya Sharma's latest symptoms" or "Draft message to all diabetic patients"
-                    </div>
-                  </div>
+                  {/* Voice Assistant */}
+                  <VoiceAssistant
+                    onCommand={(command, result) => {
+                      console.log('Voice command executed:', command, result);
+                      if (command === 'show_patient') {
+                        setActiveTab('patients');
+                        toast.success(`Switching to patient view for ${result.patientName}`);
+                      } else if (command === 'draft_message') {
+                        setActiveTab('communication');
+                        toast.success('Opening messaging interface');
+                      } else if (command === 'schedule') {
+                        toast.success('Smart scheduling activated');
+                      }
+                    }}
+                  />
 
                   {/* Predictive Insights */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
