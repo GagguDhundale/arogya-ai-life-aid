@@ -81,57 +81,88 @@ export default function DoctorDashboard() {
     try {
       setLoading(true);
       
-      // Get doctor's patients through relationships
-      const { data: relationships, error: relError } = await supabase
-        .from('doctor_patient_relationships')
-        .select(`
-          patient_id,
-          patients (
-            id,
-            first_name,
-            last_name,
-            date_of_birth,
-            user_id,
-            created_at
-          )
-        `)
-        .eq('is_active', true);
+      // Mock data for demo purposes - in production this would come from Supabase
+      const mockPatients: Patient[] = [
+        {
+          id: '1',
+          first_name: 'Priya',
+          last_name: 'Sharma',
+          date_of_birth: '1985-03-15',
+          user_id: 'user1',
+          created_at: '2024-01-01',
+          last_report: '2024-09-04T08:30:00Z',
+          risk_level: 'high',
+          has_new_data: true,
+          next_appointment: '2024-09-04T14:00:00Z'
+        },
+        {
+          id: '2',
+          first_name: 'Arjun',
+          last_name: 'Patel',
+          date_of_birth: '1978-11-22',
+          user_id: 'user2',
+          created_at: '2024-01-15',
+          last_report: '2024-09-03T16:45:00Z',
+          risk_level: 'medium',
+          has_new_data: false,
+          next_appointment: '2024-09-05T10:00:00Z'
+        },
+        {
+          id: '3',
+          first_name: 'Meera',
+          last_name: 'Singh',
+          date_of_birth: '1992-07-08',
+          user_id: 'user3',
+          created_at: '2024-02-01',
+          last_report: '2024-09-04T06:15:00Z',
+          risk_level: 'high',
+          has_new_data: true
+        },
+        {
+          id: '4',
+          first_name: 'Rajesh',
+          last_name: 'Kumar',
+          date_of_birth: '1965-12-30',
+          user_id: 'user4',
+          created_at: '2024-01-20',
+          last_report: '2024-09-02T12:20:00Z',
+          risk_level: 'low',
+          has_new_data: false
+        },
+        {
+          id: '5',
+          first_name: 'Anita',
+          last_name: 'Gupta',
+          date_of_birth: '1988-09-14',
+          user_id: 'user5',
+          created_at: '2024-02-10',
+          last_report: '2024-09-04T09:10:00Z',
+          risk_level: 'medium',
+          has_new_data: true,
+          next_appointment: '2024-09-04T16:30:00Z'
+        },
+        {
+          id: '6',
+          first_name: 'Vikram',
+          last_name: 'Rao',
+          date_of_birth: '1975-05-18',
+          user_id: 'user6',
+          created_at: '2024-01-05',
+          last_report: '2024-09-01T14:55:00Z',
+          risk_level: 'low',
+          has_new_data: false
+        }
+      ];
 
-      if (relError) throw relError;
+      setPatients(mockPatients);
 
-      // Get shared reports for recent activity
-      const { data: reports, error: reportsError } = await supabase
-        .from('shared_health_reports')
-        .select('patient_id, created_at, is_urgent')
-        .order('created_at', { ascending: false });
-
-      if (reportsError) throw reportsError;
-
-      // Process patient data
-      const patientList: Patient[] = relationships?.map((rel: any) => {
-        const patient = rel.patients;
-        const patientReports = reports?.filter((r: any) => r.patient_id === patient.id) || [];
-        const latestReport = patientReports[0];
-        const hasNewData = latestReport && new Date(latestReport.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
-        const riskLevel = patientReports.some((r: any) => r.is_urgent) ? 'high' : 
-                         patientReports.length > 3 ? 'medium' : 'low';
-
-        return {
-          ...patient,
-          last_report: latestReport?.created_at,
-          risk_level: riskLevel,
-          has_new_data: hasNewData
-        };
-      }) || [];
-
-      setPatients(patientList);
-
-      // Calculate stats
+      // Calculate realistic stats
       const newStats: DashboardStats = {
-        total_patients: patientList.length,
-        unread_reports: reports?.filter(r => new Date(r.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)).length || 0,
-        today_appointments: 0, // This would come from appointments table
-        high_risk_patients: patientList.filter(p => p.risk_level === 'high').length
+        total_patients: mockPatients.length,
+        unread_reports: mockPatients.filter(p => p.has_new_data).length,
+        today_appointments: mockPatients.filter(p => p.next_appointment && 
+          new Date(p.next_appointment).toDateString() === new Date().toDateString()).length,
+        high_risk_patients: mockPatients.filter(p => p.risk_level === 'high').length
       };
 
       setStats(newStats);
@@ -180,22 +211,35 @@ export default function DoctorDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-gradient-medical shadow-medical">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Heart className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold text-primary">Arogya-AI</span>
-                <Badge variant="secondary">Professional</Badge>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-white/20 rounded-xl">
+                  <Heart className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <span className="text-2xl font-bold text-white">Arogya-AI</span>
+                  <Badge variant="secondary" className="ml-2 bg-white/20 text-white border-white/30">
+                    Professional
+                  </Badge>
+                </div>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <Button variant="outline" onClick={signOut} className="flex items-center gap-2">
+              <div className="relative">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
+                  <Bell className="h-5 w-5" />
+                </Button>
+                <div className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full animate-pulse-soft"></div>
+              </div>
+              <div className="text-white text-sm">
+                <p className="font-medium">Dr. {user?.user_metadata?.full_name || 'Professional'}</p>
+                <p className="text-white/80 text-xs">Online</p>
+              </div>
+              <Button variant="outline" onClick={signOut} className="flex items-center gap-2 bg-white/10 text-white border-white/30 hover:bg-white/20">
                 <LogOut className="h-4 w-4" />
                 Sign Out
               </Button>
@@ -206,113 +250,156 @@ export default function DoctorDashboard() {
 
       <div className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 max-w-4xl">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-6 max-w-5xl bg-card shadow-card">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <TrendingUp className="h-4 w-4" />
-              Dashboard
+              <span className="hidden sm:inline">Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="patients" className="flex items-center gap-2">
+            <TabsTrigger value="patients" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Users className="h-4 w-4" />
-              Patients
+              <span className="hidden sm:inline">Patients</span>
             </TabsTrigger>
-            <TabsTrigger value="clinical-support" className="flex items-center gap-2">
+            <TabsTrigger value="clinical-support" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Stethoscope className="h-4 w-4" />
-              Clinical AI
+              <span className="hidden sm:inline">Clinical AI</span>
             </TabsTrigger>
-            <TabsTrigger value="communication" className="flex items-center gap-2">
+            <TabsTrigger value="communication" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Bell className="h-4 w-4" />
-              Messages
+              <span className="hidden sm:inline">Messages</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <FileText className="h-4 w-4" />
-              Analytics
+              <span className="hidden sm:inline">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-copilot" className="flex items-center gap-2">
+            <TabsTrigger value="ai-copilot" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Users className="h-4 w-4" />
-              AI Co-Pilot
+              <span className="hidden sm:inline">AI Co-Pilot</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className="shadow-card hover:shadow-hover transition-all duration-300 animate-fade-in">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Patients</CardTitle>
+                  <div className="p-2 bg-primary-light rounded-lg">
+                    <Users className="h-4 w-4 text-primary" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.total_patients}</div>
+                  <div className="text-3xl font-bold text-foreground">{stats.total_patients}</div>
+                  <p className="text-xs text-success mt-1">+2 this week</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="shadow-card hover:shadow-hover transition-all duration-300 animate-fade-in">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Unread Reports</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Unread Reports</CardTitle>
+                  <div className="p-2 bg-warning/20 rounded-lg">
+                    <FileText className="h-4 w-4 text-warning" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.unread_reports}</div>
+                  <div className="text-3xl font-bold text-foreground">{stats.unread_reports}</div>
+                  <p className="text-xs text-warning mt-1">Requires attention</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="shadow-card hover:shadow-hover transition-all duration-300 animate-fade-in">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Today's Appointments</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Today's Appointments</CardTitle>
+                  <div className="p-2 bg-accent/20 rounded-lg">
+                    <Calendar className="h-4 w-4 text-accent" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.today_appointments}</div>
+                  <div className="text-3xl font-bold text-foreground">{stats.today_appointments}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Next: 2:00 PM</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="shadow-card hover:shadow-hover transition-all duration-300 animate-fade-in">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">High-Risk Patients</CardTitle>
-                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                  <CardTitle className="text-sm font-medium text-muted-foreground">High-Risk Patients</CardTitle>
+                  <div className="p-2 bg-destructive/20 rounded-lg">
+                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-destructive">{stats.high_risk_patients}</div>
+                  <div className="text-3xl font-bold text-destructive">{stats.high_risk_patients}</div>
+                  <p className="text-xs text-destructive mt-1">Immediate review needed</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Priority Patients */}
-            <Card>
-              <CardHeader>
+            <Card className="shadow-card">
+              <CardHeader className="bg-gradient-urgent text-white rounded-t-lg">
                 <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-destructive" />
+                  <AlertCircle className="h-5 w-5" />
                   Priority Patients
                 </CardTitle>
-                <CardDescription>Patients requiring immediate attention</CardDescription>
+                <CardDescription className="text-white/90">Patients requiring immediate attention</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-4">
                   {patients
                     .filter(p => p.risk_level === 'high' || p.has_new_data)
                     .slice(0, 5)
-                    .map(patient => (
-                      <div key={patient.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                        <div className="flex items-center space-x-3">
+                    .map((patient, index) => (
+                      <div 
+                        key={patient.id} 
+                        className="flex items-center justify-between p-4 border border-border rounded-xl hover:shadow-md transition-all cursor-pointer bg-gradient-to-r from-card to-primary-light/5"
+                        onClick={() => {
+                          setSelectedPatient(patient);
+                          setIsPatientModalOpen(true);
+                        }}
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-gradient-medical rounded-full flex items-center justify-center text-white font-semibold">
+                            {patient.first_name[0]}{patient.last_name[0]}
+                          </div>
                           <div>
-                            <h4 className="font-medium">{patient.first_name} {patient.last_name}</h4>
+                            <h4 className="font-semibold text-lg">{patient.first_name} {patient.last_name}</h4>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              {patient.has_new_data && (
+                                <span className="text-primary font-medium">● New data shared</span>
+                              )}
+                              {patient.next_appointment && (
+                                <span className="text-accent">● Appointment today</span>
+                              )}
+                            </div>
                             <p className="text-sm text-muted-foreground">
-                              {patient.has_new_data && 'New data shared • '}
-                              Last active: {patient.last_report ? new Date(patient.last_report).toLocaleDateString() : 'No recent activity'}
+                              Last active: {patient.last_report ? new Date(patient.last_report).toLocaleString() : 'No recent activity'}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant={getRiskBadgeVariant(patient.risk_level || 'low')}>
+                        <div className="flex items-center space-x-3">
+                          <Badge 
+                            variant={getRiskBadgeVariant(patient.risk_level || 'low')}
+                            className="shadow-sm"
+                          >
                             {patient.risk_level?.toUpperCase()}
                           </Badge>
-                          {patient.has_new_data && <Badge variant="outline">New</Badge>}
+                          {patient.has_new_data && (
+                            <Badge variant="outline" className="border-primary text-primary bg-primary/10 animate-pulse-soft">
+                              NEW
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     ))}
                   
                   {patients.filter(p => p.risk_level === 'high' || p.has_new_data).length === 0 && (
-                    <p className="text-center text-muted-foreground py-8">No priority patients at this time</p>
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Heart className="h-8 w-8 text-success" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">All Clear!</h3>
+                      <p className="text-muted-foreground">No priority patients at this time</p>
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -362,7 +449,7 @@ export default function DoctorDashboard() {
               {filteredPatients.map(patient => (
                 <Card 
                   key={patient.id} 
-                  className="hover:shadow-md transition-shadow cursor-pointer"
+                  className="hover:shadow-hover transition-all duration-300 cursor-pointer border-l-4 border-l-transparent hover:border-l-primary shadow-card"
                   onClick={() => {
                     setSelectedPatient(patient);
                     setIsPatientModalOpen(true);
@@ -371,34 +458,58 @@ export default function DoctorDashboard() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-primary font-semibold">
-                            {patient.first_name[0]}{patient.last_name[0]}
-                          </span>
+                        <div className="relative">
+                          <div className="w-16 h-16 bg-gradient-medical rounded-2xl flex items-center justify-center shadow-md">
+                            <span className="text-white font-bold text-lg">
+                              {patient.first_name[0]}{patient.last_name[0]}
+                            </span>
+                          </div>
+                          {patient.has_new_data && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full border-2 border-white animate-pulse-soft"></div>
+                          )}
                         </div>
                         
-                        <div className="space-y-1">
-                          <h3 className="font-semibold text-lg">{patient.first_name} {patient.last_name}</h3>
+                        <div className="space-y-2">
+                          <h3 className="font-bold text-xl text-foreground">{patient.first_name} {patient.last_name}</h3>
                           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span>DOB: {new Date(patient.date_of_birth).toLocaleDateString()}</span>
+                            <span className="bg-muted px-2 py-1 rounded-md">
+                              DOB: {new Date(patient.date_of_birth).toLocaleDateString()}
+                            </span>
                             <span>•</span>
-                            <span>Age: {Math.floor((Date.now() - new Date(patient.date_of_birth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))}</span>
+                            <span className="bg-muted px-2 py-1 rounded-md">
+                              Age: {Math.floor((Date.now() - new Date(patient.date_of_birth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))}
+                            </span>
                           </div>
-                          {patient.last_report && (
-                            <p className="text-sm text-muted-foreground">
-                              Last report: {new Date(patient.last_report).toLocaleDateString()}
-                            </p>
-                          )}
+                          <div className="flex items-center gap-4 text-sm">
+                            {patient.last_report && (
+                              <span className="text-muted-foreground">
+                                Last report: {new Date(patient.last_report).toLocaleString()}
+                              </span>
+                            )}
+                            {patient.next_appointment && (
+                              <span className="text-accent font-medium">
+                                Next: {new Date(patient.next_appointment).toLocaleString()}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-2">
-                        <Badge variant={getRiskBadgeVariant(patient.risk_level || 'low')}>
-                          {patient.risk_level?.toUpperCase()}
+                      <div className="flex flex-col items-end space-y-2">
+                        <Badge 
+                          variant={getRiskBadgeVariant(patient.risk_level || 'low')}
+                          className="shadow-sm text-xs px-3 py-1"
+                        >
+                          {patient.risk_level?.toUpperCase()} RISK
                         </Badge>
                         {patient.has_new_data && (
-                          <Badge variant="outline" className="border-primary text-primary">
-                            New Data
+                          <Badge variant="outline" className="border-primary text-primary bg-primary/10 animate-pulse-soft">
+                            NEW DATA
+                          </Badge>
+                        )}
+                        {patient.next_appointment && new Date(patient.next_appointment).toDateString() === new Date().toDateString() && (
+                          <Badge variant="outline" className="border-accent text-accent bg-accent/10">
+                            TODAY
                           </Badge>
                         )}
                       </div>
