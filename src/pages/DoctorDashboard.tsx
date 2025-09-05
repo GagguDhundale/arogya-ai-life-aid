@@ -64,7 +64,11 @@ export default function DoctorDashboard() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
 
-  // Redirect if not a doctor
+  useEffect(() => {
+    loadDoctorData();
+  }, []);
+
+  // Redirect if not a doctor - moved after hooks
   if (user && userType !== 'doctor') {
     return <Navigate to="/dashboard" replace />;
   }
@@ -72,10 +76,6 @@ export default function DoctorDashboard() {
   if (!user) {
     return <Navigate to="/" replace />;
   }
-
-  useEffect(() => {
-    loadDoctorData();
-  }, []);
 
   const loadDoctorData = async () => {
     try {
