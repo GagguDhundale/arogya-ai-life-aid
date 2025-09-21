@@ -16,42 +16,57 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
+          booking_reason: string | null
+          consultation_fee: number | null
           created_at: string | null
           doctor_id: string
           duration: unknown | null
           id: string
           notes: string | null
           patient_id: string
+          patient_symptoms: string | null
+          preferred_time_slots: string[] | null
           scheduled_time: string
           status: string | null
           type: string | null
           updated_at: string | null
+          urgency_level: string | null
           video_call_link: string | null
         }
         Insert: {
+          booking_reason?: string | null
+          consultation_fee?: number | null
           created_at?: string | null
           doctor_id: string
           duration?: unknown | null
           id?: string
           notes?: string | null
           patient_id: string
+          patient_symptoms?: string | null
+          preferred_time_slots?: string[] | null
           scheduled_time: string
           status?: string | null
           type?: string | null
           updated_at?: string | null
+          urgency_level?: string | null
           video_call_link?: string | null
         }
         Update: {
+          booking_reason?: string | null
+          consultation_fee?: number | null
           created_at?: string | null
           doctor_id?: string
           duration?: unknown | null
           id?: string
           notes?: string | null
           patient_id?: string
+          patient_symptoms?: string | null
+          preferred_time_slots?: string[] | null
           scheduled_time?: string
           status?: string | null
           type?: string | null
           updated_at?: string | null
+          urgency_level?: string | null
           video_call_link?: string | null
         }
         Relationships: [
@@ -115,39 +130,83 @@ export type Database = {
       }
       doctors: {
         Row: {
+          available_hours: string | null
           bio: string | null
+          consultation_fee: number | null
           created_at: string | null
           first_name: string | null
           id: string
           last_name: string | null
           license_number: string | null
+          office_location: string | null
           specialty: string | null
           updated_at: string | null
           user_id: string
+          years_experience: number | null
         }
         Insert: {
+          available_hours?: string | null
           bio?: string | null
+          consultation_fee?: number | null
           created_at?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
           license_number?: string | null
+          office_location?: string | null
           specialty?: string | null
           updated_at?: string | null
           user_id: string
+          years_experience?: number | null
         }
         Update: {
+          available_hours?: string | null
           bio?: string | null
+          consultation_fee?: number | null
           created_at?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
           license_number?: string | null
+          office_location?: string | null
           specialty?: string | null
           updated_at?: string | null
           user_id?: string
+          years_experience?: number | null
         }
         Relationships: []
+      }
+      patient_ai_chat_sessions: {
+        Row: {
+          conversation_history: Json | null
+          created_at: string | null
+          id: string
+          patient_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          conversation_history?: Json | null
+          created_at?: string | null
+          id?: string
+          patient_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          conversation_history?: Json | null
+          created_at?: string | null
+          id?: string
+          patient_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_ai_chat_sessions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patient_air_quality_alerts: {
         Row: {
@@ -630,28 +689,43 @@ export type Database = {
       patients: {
         Row: {
           created_at: string | null
+          current_symptoms: string | null
           date_of_birth: string | null
+          emergency_contact: string | null
           first_name: string | null
           id: string
           last_name: string | null
+          medical_history: string | null
+          pain_level: number | null
+          phone_number: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
+          current_symptoms?: string | null
           date_of_birth?: string | null
+          emergency_contact?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          medical_history?: string | null
+          pain_level?: number | null
+          phone_number?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
+          current_symptoms?: string | null
           date_of_birth?: string | null
+          emergency_contact?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          medical_history?: string | null
+          pain_level?: number | null
+          phone_number?: string | null
           updated_at?: string | null
           user_id?: string
         }

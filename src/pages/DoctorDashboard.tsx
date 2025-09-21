@@ -27,6 +27,7 @@ import PatientProfileModal from '@/components/PatientProfileModal';
 import MedicalImageUpload from '@/components/MedicalImageUpload';
 import VoiceAssistant from '@/components/VoiceAssistant';
 import PatientMessaging from '@/components/PatientMessaging';
+import { PatientAppointmentManagement } from '@/components/PatientAppointmentManagement';
 
 interface Patient {
   id: string;
@@ -250,7 +251,7 @@ export default function DoctorDashboard() {
 
       <div className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 max-w-5xl bg-card shadow-card">
+          <TabsList className="grid w-full grid-cols-7 max-w-6xl bg-card shadow-card">
             <TabsTrigger value="dashboard" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <TrendingUp className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -258,6 +259,10 @@ export default function DoctorDashboard() {
             <TabsTrigger value="patients" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Patients</span>
+            </TabsTrigger>
+            <TabsTrigger value="appointments" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Calendar className="h-4 w-4" />
+              <span className="hidden sm:inline">Appointments</span>
             </TabsTrigger>
             <TabsTrigger value="clinical-support" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Stethoscope className="h-4 w-4" />
