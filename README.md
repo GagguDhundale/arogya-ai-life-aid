@@ -22,7 +22,7 @@ For Patients:
 🧠 Mental Health Tracker: Log your mood, get AI insights, and access crisis resources.
 🍎 Diet & Nutrition Tracker: Monitor your meals and water intake with personalized goals.
 🆘 Emergency Profile: Securely store critical medical information for emergencies.
-📊 Weekly Health Reports: Get personalized insights and actionable health goals.
+📊 Weekly's Health Reports: Get personalized insights and actionable health goals.
 
 
 For Doctors:
